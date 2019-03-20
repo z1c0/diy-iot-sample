@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>SignalR Real-time Chart Example</title>
+  <script src="js/Chart.js"></script>
+  <script src="js/signalr.js"></script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      // Real-time Chart Example written by Simon Brunel (Plunker: https://plnkr.co/edit/Imxwl9OQJuaMepLNy6ly?p=info)
+      var samples = 100;
+      var speed = 250;
+      var values0 = [];
+      var values1 = [];
+      var labels = [];
+      var charts = [];
+      //var value = 0;
+
+      values0.length = samples;
+      values1.length = samples;
+      labels.length = samples;
+      values0.fill(0);
+      values1.fill(0);
+      labels.fill(0);
+
+      charts.push(new Chart(document.getElementById("chart0"),
+        {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                data: values0,
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                borderColor: 'rgb(255, 99, 132)',
+                borderWidth: 2,
+                lineTension: 0.25,
+                pointRadius: 0
+              }
+            ]
+          },
+          options: {
+            responsive: false,
+            animation: {
+              duration: speed * 1.5,
+              easing: 'linear'
+            },
+            legend: false,
+            scales: {
+              xAxes: [
+                {
+                  display: false
+                }
+              ],
+              yAxes: [
+                {
+                  ticks: {
+                    max: 50,
+                    min: -10
+                  }
+                }
+              ]
+            }
+          }
+        }),
+        new Chart(document.getElementById("chart1"),
+        {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                data: values1,
+                backgroundColor: 'rgba(71, 148, 254, 0.1)',
+                borderColor: 'rgb(71, 148, 254)',
+                borderWidth: 2,
+                lineTension: 0.25,
+                pointRadius: 0
+              }
+            ]
+          },
+          options: {
+            responsive: false,
+            animation: {
+              duration: speed * 1.5,
+              easing: 'linear'
+            },
+            legend: false,
+            scales: {
+              xAxes: [
+                {
+                  display: false
+                }
+              ],
+              yAxes: [
+                {
+                  ticks: {
+                    max: 80,
+                    min: 20
+                  }
+                }
+              ]
+            }
+          }
+        }));
+
+      var connection = new signalR.HubConnectionBuilder().withUrl("/sensor").build();
+      connection.on('Broadcast',
+        function (sender, message) {
+          console.log(message);
+          values0.push(message.temperature);
+          console.log(message.temperature);
+          values0.shift();
+          charts[0].update();
+
+          values1.push(message.humidity);
+          values1.shift();
+          charts[1].update();
+        });
+
+      connection.start();
+    });
+  </script>
+
+</head>
+
+<body>
+  <h1>IoT Sensor Data</h1>
+  <h2>Temperature</h2>
+  <canvas id="chart0" style="width:512px;height:320px"></canvas>
+  <h2>Humidity</h2>
+  <canvas id="chart1" style="width:512px;height:320px"></canvas>
+
+</html>
