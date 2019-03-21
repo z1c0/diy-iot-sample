@@ -2,7 +2,7 @@
 
 This is an Arduino project running on a NodeMCU reading temperature and humidity data from a DHT11 sensor.
 
-![The circuit schematics](circuit-frizting.png).
+![The circuit schematics](circuit-fritzing.png).
 
 Before uploading the Arduino sketch, make sure to update **WIFI connection info** and the **Azure IoT device connection string** accordingly.
 
