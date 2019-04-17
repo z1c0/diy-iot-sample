@@ -37,7 +37,7 @@ namespace IotSensorWeb
       // Create the receiver using the default consumer group.
       // For the purposes of this sample, read only messages sent since 
       // the time the receiver is created. Typically, you don't want to skip any messages.
-      var eventHubReceiver = s_eventHubClient.CreateReceiver("$Default", partition, EventPosition.FromEnqueuedTime(DateTime.Now));
+      var eventHubReceiver = _eventHubClient.CreateReceiver("$Default", partition, EventPosition.FromEnqueuedTime(DateTime.Now));
       while (true)
       {
         var events = await eventHubReceiver.ReceiveAsync(100);
@@ -59,10 +59,10 @@ namespace IotSensorWeb
       // Create an EventHubClient instance to connect to the
       // IoT Hub Event Hubs-compatible endpoint.
       var connectionString = new EventHubsConnectionStringBuilder(new Uri(EventHubsCompatibleEndpoint), EventHubsCompatiblePath, IotHubSasKeyName, IotHubSasKey);
-      s_eventHubClient = EventHubClient.CreateFromConnectionString(connectionString.ToString());
+      _eventHubClient = EventHubClient.CreateFromConnectionString(connectionString.ToString());
 
       // Create a PartitionReciever for each partition on the hub.
-      var runtimeInfo = await s_eventHubClient.GetRuntimeInformationAsync();
+      var runtimeInfo = await _eventHubClient.GetRuntimeInformationAsync();
       var d2cPartitions = runtimeInfo.PartitionIds;
 
       _tasks = new List<Task>();
